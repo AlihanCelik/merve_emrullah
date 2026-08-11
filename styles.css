@@ -591,52 +591,38 @@ button {
     gap: 1.5rem;
 }
 
-.luxury-ribbon-container {
-    max-width: 980px;
+.romantic-quote-container {
+    max-width: 850px;
     margin: 0 auto;
     background: var(--bg-card);
     backdrop-filter: blur(20px);
     border: 1.5px solid var(--gold-primary);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.8rem;
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.22);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.ribbon-item {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.ribbon-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(212, 175, 55, 0.12);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    color: var(--gold-primary);
+    border-radius: var(--radius-pill);
+    padding: 0.85rem 2rem;
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
-    transition: var(--transition);
+    gap: 1rem;
+    text-align: center;
 }
 
-.ribbon-icon.ring {
-    background: var(--gold-gradient);
-    color: #0F172A;
-    box-shadow: var(--gold-glow);
-    animation: pulseGlow 2.5s infinite ease-in-out;
+.romantic-quote-text {
+    font-family: var(--font-romantic), serif;
+    font-size: 1.35rem;
+    font-style: italic;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+    line-height: 1.3;
 }
 
-.ribbon-text {
+.quote-sparkle-left,
+.quote-sparkle-right {
+    color: var(--gold-primary);
+    font-size: 1.1rem;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .ribbon-text strong {
@@ -2483,45 +2469,26 @@ button {
         margin-bottom: 1rem;
     }
 
-    /* Ultra-Minimalist Floating Ribbon on Mobile */
+    /* Romantic Quote Ribbon on Mobile */
     .stats-bar {
         margin-top: -1.8rem;
         margin-bottom: 1.8rem;
     }
 
-    .luxury-ribbon-container {
-        padding: 0.65rem 1.2rem;
+    .romantic-quote-container {
+        padding: 0.7rem 1.2rem;
         gap: 0.5rem;
-        border-radius: var(--radius-pill);
         max-width: 92%;
         margin: 0 auto;
     }
 
-    .ribbon-divider {
-        display: none;
-    }
-
-    .ribbon-item:not(.highlight) {
-        display: none;
-    }
-
-    .ribbon-item.highlight {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .ribbon-text span {
-        display: none;
-    }
-
-    .ribbon-text strong {
+    .romantic-quote-text {
         font-size: 1.02rem;
     }
 
-    .ribbon-icon {
-        width: 34px;
-        height: 34px;
-        font-size: 0.95rem;
+    .quote-sparkle-left,
+    .quote-sparkle-right {
+        font-size: 0.9rem;
     }
 
     .hero-description {
