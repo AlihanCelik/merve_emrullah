@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merve & Emrullah — Düğün Anı Defteri & Medya Paylaşımı</title>
+    <meta name="description" content="Merve & Emrullah çiftinin düğününe hoş geldiniz! Fotoğraf, video yükleyin ve unutulmaz anılarınızı dijital anı defterimize bırakın.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Ambient Sparkle Canvas -->
+    <canvas id="sparkleCanvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand">
+                <span class="ring-icon"><i class="fa-solid fa-ring"></i></span>
+                <span class="brand-text">Merve <span class="amp">&</span> Emrullah</span>
+            </a>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#hero" class="nav-link active"><i class="fa-solid fa-heart"></i> Ana Sayfa</a>
+                <a href="#upload-section" class="nav-link"><i class="fa-solid fa-cloud-arrow-up"></i> Anı Paylaş</a>
+                <button class="nav-btn-gold" id="btnOpenQrModal"><i class="fa-solid fa-qrcode"></i> Masa QR Kodu</button>
+                <button class="theme-toggle" id="themeToggleBtn" title="Temayı Değiştir">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menü">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section" id="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-container">
+            <div class="hero-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Unutulmaz Düğün Hatıraları <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <h1 class="hero-title">Merve & Emrullah</h1>
+            <p class="hero-subtitle">Birlikte Bir Ömre Adım Atarken...</p>
+            <p class="hero-description">
+                Bu özel günümüzde bize katıldığınız için teşekkür ederiz! Masanızdaki QR kodu okutarak veya aşağıdaki butonları kullanarak en güzel fotoğraflarınızı, videolarınızı ve içten tebrik mesajlarınızı bizimle paylaşın.
+            </p>
+
+            <!-- Live Countdown (Düğün Öncesi) -->
+            <div class="countdown-card" id="countdownCard">
+                <div class="countdown-title"><i class="fa-solid fa-calendar-days"></i> Düğün Tarihi: 16 Ağustos Pazar — Saat 13:00</div>
+                <div class="countdown-timer" id="countdownTimer">
+                    <div class="time-block"><span id="cdDays">00</span><label>Gün</label></div>
+                    <div class="time-sep">:</div>
+                    <div class="time-block"><span id="cdHours">00</span><label>Saat</label></div>
+                    <div class="time-sep">:</div>
+                    <div class="time-block"><span id="cdMinutes">00</span><label>Dakika</label></div>
+                    <div class="time-sep">:</div>
+                    <div class="time-block"><span id="cdSeconds">00</span><label>Saniye</label></div>
+                </div>
+            </div>
+
+            <!-- Live Wedding Banner (Düğün Esnasında Görünen Canlı Rozet) -->
+            <div class="wedding-live-banner hidden" id="weddingLiveBanner">
+                <div class="live-pulse-badge">
+                    <span class="live-dot-pulse"></span> CANLI YAYIN & DÜĞÜN ANINDAYIZ
+                </div>
+                <h3 class="live-text-title">✨ DÜĞÜNÜMÜZ BAŞLADI! CANLI ANILAR BİRİKİYOR 🎉</h3>
+                <p class="live-text-sub">Masanızdaki QR kodu okutarak veya aşağıdaki butonu kullanarak fotoğraf, video ve dileklerinizi anında paylaşın.</p>
+            </div>
+
+            <!-- Hero Action Buttons -->
+            <div class="hero-actions">
+                <a href="#upload-section" class="btn-hero-primary">
+                    <i class="fa-solid fa-plus-circle"></i> Anı & Fotoğraf Yükle
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Stats Bar -->
+    <section class="stats-bar">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-icon"><i class="fa-solid fa-camera-retro"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statPhotosCount">0</span>
+                    <span class="stat-label">Fotoğraf & Video</span>
+                </div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statWishesCount">0</span>
+                    <span class="stat-label">Anı & Dilek Notu</span>
+                </div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statLikesCount">0</span>
+                    <span class="stat-label">Kalp & Beğeni</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+
+        <!-- Upload Section -->
+        <section class="upload-section" id="upload-section">
+            <div class="section-header">
+                <span class="section-tag"><i class="fa-solid fa-camera"></i> Anını Bırak</span>
+                <h2 class="section-title">Fotoğraf, Video ve Dilek Paylaş</h2>
+                <p class="section-subtitle">Gelin ve Damat için unutulmaz bir anı bırakın. Masanızdan saniyeler içinde yükleyebilirsiniz!</p>
+            </div>
+
+            <div class="upload-card-wrapper">
+                <!-- Upload Tabs Header -->
+                <div class="upload-tabs">
+                    <button class="upload-tab-btn active" data-tab="tab-wish">
+                        <i class="fa-solid fa-pen-nib"></i> <span>Yazılı Anı Defteri</span>
+                    </button>
+                    <button class="upload-tab-btn" data-tab="tab-media">
+                        <i class="fa-solid fa-photo-film"></i> <span>Fotoğraf & Video</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: Written Guestbook Wish -->
+                <div class="upload-tab-content active" id="tab-wish">
+                    <form id="formWish" class="upload-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="wishName"><i class="fa-solid fa-user"></i> Adınız Soyadınız *</label>
+                                <input type="text" id="wishName" placeholder="Örn: Ahmet & Selin Yılmaz" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="wishSide"><i class="fa-solid fa-users"></i> Yakınlık Dereceniz</label>
+                                <select id="wishSide">
+                                    <option value="Gelin Tarafı">👰 Gelin Tarafı</option>
+                                    <option value="Damat Tarafı">🤵 Damat Tarafı</option>
+                                    <option value="Ortak Arkadaş" selected>💖 Ortak Arkadaş</option>
+                                    <option value="Aile">👨‍👩‍👧‍👦 Aile & Akraba</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-icons"></i> Mesajınızın Hissiyatı</label>
+                            <div class="mood-selector">
+                                <label class="mood-option active">
+                                    <input type="radio" name="wishMood" value="❤️ Sevgi & Mutluluk" checked>
+                                    <span>❤️ Sevgi</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="wishMood" value="🎉 Coşku & Eğlence">
+                                    <span>🎉 Coşku</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="wishMood" value="🥂 Sonsuz Tebrikler">
+                                    <span>🥂 Tebrik</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="wishMood" value="🥹 Duygusal Anı">
+                                    <span>🥹 Duygusal</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="wishMessage"><i class="fa-solid fa-heart-pulse"></i> Anı Notunuz & İyi Dilekleriniz *</label>
+                            <textarea id="wishMessage" rows="4" placeholder="Merve & Emrullah çiftine duygu ve dileklerinizi yazın..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit-gold">
+                            <i class="fa-solid fa-paper-plane"></i> Anı Notunu Gönder
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Photo & Video Upload -->
+                <div class="upload-tab-content" id="tab-media">
+                    <form id="formMedia" class="upload-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="mediaName"><i class="fa-solid fa-user"></i> Adınız Soyadınız *</label>
+                                <input type="text" id="mediaName" placeholder="Adınız ve Soyadınız" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="mediaSide"><i class="fa-solid fa-users"></i> Yakınlık Dereceniz</label>
+                                <select id="mediaSide">
+                                    <option value="Gelin Tarafı">👰 Gelin Tarafı</option>
+                                    <option value="Damat Tarafı">🤵 Damat Tarafı</option>
+                                    <option value="Ortak Arkadaş" selected>💖 Ortak Arkadaş</option>
+                                    <option value="Aile">👨‍👩‍👧‍👦 Aile & Akraba</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Drag & Drop Zone -->
+                        <div class="dropzone" id="dropzone">
+                            <input type="file" id="mediaFileInput" accept="image/*,video/*" multiple class="file-input-hidden">
+                            <div class="dropzone-content">
+                                <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                <h4>Fotoğraf veya Videolarınızı Buraya Sürükleyin</h4>
+                                <p>veya cihazınızdan dosya seçmek için tıklayın (Birden fazla seçebilirsiniz)</p>
+                                <button type="button" class="btn-browse-file" onclick="document.getElementById('mediaFileInput').click()">
+                                    <i class="fa-solid fa-folder-open"></i> Dosya Seç
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Media Preview Container -->
+                        <div class="preview-grid" id="mediaPreviewGrid"></div>
+
+                        <div class="form-group">
+                            <label for="mediaCaption"><i class="fa-solid fa-comment-dots"></i> Fotoğraf / Video Açıklaması (İsteğe Bağlı)</label>
+                            <input type="text" id="mediaCaption" placeholder="Örn: 5. Masadan harika bir kare! 🥂">
+                        </div>
+
+                        <button type="submit" class="btn-submit-gold" id="btnSubmitMedia">
+                            <i class="fa-solid fa-paper-plane"></i> Medyayı Gönder
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Bride & Groom Memories Summary Section -->
+        <section class="admin-vault-section">
+            <div class="vault-card">
+                <div class="vault-info">
+                    <h3><i class="fa-solid fa-box-archive"></i> Gelin & Damat Özel Anı Albümü</h3>
+                    <p>Düğünde yüklenen tüm fotoğraf, video ve anı notlarını tek tıkla dijital albüm olarak indirebilirsiniz.</p>
+                </div>
+                <div class="vault-actions">
+                    <button class="btn-vault-gold" id="btnExportMemories">
+                        <i class="fa-solid fa-download"></i> Tüm Anıları İndir (JSON/Albüm)
+                    </button>
+                    <button class="btn-vault-outline" id="btnToggleLiveTest">
+                        <i class="fa-solid fa-bolt"></i> Düğün Anı Modunu Test Et
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>Merve & Emrullah</h2>
+                <p>Unutulmaz bir ömür, sonsuz sevgilerle...</p>
+            </div>
+            <div class="footer-heart">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2026 Merve & Emrullah Düğün Anı Platformu. Tüm Davetlilere Teşekkür Ederiz.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- QR Code Generator & Table Badge Modal -->
+    <div class="modal-backdrop hidden" id="qrModal">
+        <div class="modal-card">
+            <button class="modal-close" id="btnCloseQrModal">&times;</button>
+            <div class="modal-header">
+                <span class="modal-tag"><i class="fa-solid fa-qrcode"></i> Masa QR Kartı</span>
+                <h3>Masa İçin QR Kod Oluşturucu</h3>
+                <p>Düğün masalarına koymak üzere özel QR kartı hazırlayın ve indirin.</p>
+            </div>
+            <div class="modal-body">
+                <div class="qr-controls">
+                    <label for="tableNumberInput"><i class="fa-solid fa-chair"></i> Masa Adı / Numarası:</label>
+                    <input type="text" id="tableNumberInput" value="Masa 1" placeholder="Örn: Masa 12">
+                </div>
+
+                <!-- Printable Card Preview -->
+                <div class="printable-card" id="printableCard">
+                    <div class="card-border-gold"></div>
+                    <div class="card-inner">
+                        <div class="card-header-names">Merve & Emrullah</div>
+                        <div class="card-table-badge" id="cardTableBadge">Masa 1</div>
+                        <div class="qr-code-box" id="qrCodeContainer"></div>
+                        <div class="card-instructions">
+                            <h4>📸 Anılarınızı Bizimle Paylaşın!</h4>
+                            <p>1. Telefonunuzun kamerasını açıp QR kodu okutun.<br>2. Düğünde çektiğiniz fotoğraf ve videoları anında yükleyin!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-modal-actions">
+                    <button class="btn-modal-gold" id="btnDownloadQr">
+                        <i class="fa-solid fa-download"></i> QR Kartını PNG İndir
+                    </button>
+                    <button class="btn-modal-outline" id="btnPrintQr">
+                        <i class="fa-solid fa-print"></i> Masa Kartını Yazdır
+                    </button>
+                    <button class="btn-modal-outline" id="btnCopyLink">
+                        <i class="fa-solid fa-link"></i> Bağlantıyı Kopyala
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal for Photo/Video/Audio Detail -->
+    <div class="modal-backdrop hidden" id="lightboxModal">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="btnCloseLightbox">&times;</button>
+            <div class="lightbox-media-container" id="lightboxMediaContainer"></div>
+            <div class="lightbox-info">
+                <div class="lightbox-author" id="lightboxAuthor"></div>
+                <div class="lightbox-text" id="lightboxText"></div>
+                <div class="lightbox-time" id="lightboxTime"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- JS Libraries -->
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Custom Application JS -->
+    <script src="app.js"></script>
+</body>
+</html>
