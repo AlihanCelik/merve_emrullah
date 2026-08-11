@@ -2483,6 +2483,47 @@ button {
         margin-bottom: 1rem;
     }
 
+    /* Ultra-Minimalist Floating Ribbon on Mobile */
+    .stats-bar {
+        margin-top: -1.8rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .luxury-ribbon-container {
+        padding: 0.65rem 1.2rem;
+        gap: 0.5rem;
+        border-radius: var(--radius-pill);
+        max-width: 92%;
+        margin: 0 auto;
+    }
+
+    .ribbon-divider {
+        display: none;
+    }
+
+    .ribbon-item:not(.highlight) {
+        display: none;
+    }
+
+    .ribbon-item.highlight {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ribbon-text span {
+        display: none;
+    }
+
+    .ribbon-text strong {
+        font-size: 1.02rem;
+    }
+
+    .ribbon-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+
     .hero-description {
         font-size: 0.9rem;
         line-height: 1.65;
