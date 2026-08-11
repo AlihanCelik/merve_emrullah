@@ -315,9 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const name = document.getElementById('wishName').value.trim();
-        const side = document.getElementById('wishSide').value;
-        const moodRadio = document.querySelector('input[name="wishMood"]:checked');
-        const mood = moodRadio ? moodRadio.value : '❤️ Sevgi & Mutluluk';
+        const mood = '✨ Anı & Dilek Notu';
         const message = document.getElementById('wishMessage').value.trim();
 
         if (!name || !message) return;
