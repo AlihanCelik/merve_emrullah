@@ -678,22 +678,22 @@ button {
 }
 
 /* ==========================================================================
-   AUTHENTIC LUXURY INVITATION CARD (EXACT REPLICA)
+   AUTHENTIC LUXURY INVITATION CARD
    ========================================================================== */
 
-.invitation-section {
-    margin-bottom: 6rem;
+.wedding-details-section {
+    margin-bottom: 4rem;
 }
 
 .luxury-invitation-card {
     position: relative;
-    background: linear-gradient(145deg, #FAF8F5 0%, #FFFFFF 60%, #F5EFE6 100%);
+    background: linear-gradient(145deg, #FFFDF9 0%, #FFFFFF 60%, #FAF5EB 100%);
     border: 2px solid var(--gold-primary);
-    border-radius: var(--radius-lg);
-    padding: 3.5rem 3rem;
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 0 0 40px rgba(212, 175, 55, 0.15);
-    max-width: 960px;
-    margin: 0 auto 2.5rem auto;
+    max-width: 900px;
+    margin: 0 auto;
     color: #2D3748;
     transition: var(--transition);
 }
@@ -707,36 +707,147 @@ button {
     position: absolute;
     inset: 12px;
     border: 1px solid rgba(212, 175, 55, 0.4);
-    border-radius: calc(var(--radius-lg) - 8px);
+    border-radius: 16px;
     pointer-events: none;
 }
 
 .inv-card-inner {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-}
-
-.inv-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 2rem;
 }
 
-/* Top Row */
 .inv-top-row {
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    padding-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding-bottom: 1.8rem;
 }
 
-.inv-monogram-box {
-    position: relative;
+.inv-monogram-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gold-gradient);
+    color: #0F172A;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 120px;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+    flex-shrink: 0;
+}
+
+.inv-names-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.inv-small-tag {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gold-primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.inv-names-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: var(--text-primary);
+}
+
+.inv-quote {
+    font-family: var(--font-romantic);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.inv-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+}
+
+.inv-info-card {
+    background: rgba(212, 175, 55, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.inv-info-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.inv-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--gold-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.inv-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.inv-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.inv-text-group strong {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.inv-text-group small {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.inv-actions-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.btn-inv-location {
+    background: var(--gold-gradient);
+    color: #0F172A;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.9rem 2.2rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.btn-inv-location:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.55);
 }
 
 .botanical-branch-svg {
