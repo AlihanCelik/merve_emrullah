@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const name = document.getElementById('mediaName').value.trim() || 'Anonim Davetli';
-        const side = document.getElementById('mediaSide').value;
+        const side = 'Ortak Arkadaş';
         const caption = document.getElementById('mediaCaption').value.trim();
 
         if (uploadedMediaFiles.length === 0) {
