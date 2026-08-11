@@ -591,55 +591,78 @@ button {
     gap: 1.5rem;
 }
 
-.couple-badge-container {
-    max-width: 650px;
+.luxury-ribbon-container {
+    max-width: 980px;
     margin: 0 auto;
     background: var(--bg-card);
     backdrop-filter: blur(20px);
     border: 1.5px solid var(--gold-primary);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1.6rem;
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.8rem;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.22);
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.couple-badge-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
+    justify-content: space-around;
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.couple-badge-icon {
-    width: 36px;
-    height: 36px;
+.ribbon-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.ribbon-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: var(--gold-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    transition: var(--transition);
+}
+
+.ribbon-icon.ring {
     background: var(--gold-gradient);
     color: #0F172A;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: var(--gold-glow);
+    animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
-.couple-badge-info {
+.ribbon-text {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.1rem;
 }
 
-.couple-names-title {
+.ribbon-text strong {
     font-family: var(--font-heading);
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.2;
+}
+
+.ribbon-text strong .amp {
+    color: var(--gold-primary);
+    font-family: var(--font-romantic);
+    font-style: italic;
+}
+
+.ribbon-text span {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+}
+
+.ribbon-divider {
+    width: 1px;
+    height: 35px;
+    background: rgba(212, 175, 55, 0.3);
 }
 
 .couple-names-title .amp {
