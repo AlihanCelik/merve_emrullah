@@ -504,9 +504,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const name = document.getElementById('mediaName').value.trim() || 'Anonim Davetli';
+        const name = 'Anonim Davetli';
         const side = 'Ortak Arkadaş';
-        const caption = document.getElementById('mediaCaption').value.trim();
+        const caption = '';
         const btnSubmitMedia = document.getElementById('btnSubmitMedia');
 
         const originalBtnText = btnSubmitMedia.innerHTML;
