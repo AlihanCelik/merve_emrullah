@@ -78,8 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
             updateStats();
             renderGallery();
         } catch (e) {
-            console.error('Local storage save error', e);
-            showToast('Anı kaydedilirken depolama sınırı aşıldı.', 'warning');
+            console.warn('LocalStorage quota limit reached. Optimizing cache silently...');
+            try {
+                // If browser localStorage quota (5MB) is reached, keep top 15 items and strip heavy dataUrls for local storage cache
+                const optimizedCache = memories.slice(0, 15).map(m => {
+                    if (m.mediaUrl && m.mediaUrl.length > 30000) {
+                        return { ...m, mediaUrl: '' };
+                    }
+                    return m;
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(optimizedCache));
+            } catch (err) {
+                // Ignore silent fallback
+            }
+            updateStats();
+            renderGallery();
         }
     }
 
@@ -374,6 +387,28 @@ document.addEventListener('DOMContentLoaded', () => {
         handleFiles(e.target.files);
     });
 
+    function compressImage(dataUrl, maxWidth = 1600, quality = 0.82) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => resolve(dataUrl);
+            img.src = dataUrl;
+        });
+    }
+
     function handleFiles(files) {
         const fileArray = Array.from(files);
         fileArray.forEach(file => {
@@ -382,11 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const isVideo = file.type.startsWith('video/');
             const itemObj = {
                 id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                 file: file,
                 dataUrl: '',
-                type: file.type.startsWith('video/') ? 'video' : 'photo',
+                type: isVideo ? 'video' : 'photo',
                 status: 'uploading'
             };
 
@@ -394,8 +430,14 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMediaPreviews();
 
             const reader = new FileReader();
-            reader.onload = (evt) => {
-                itemObj.dataUrl = evt.target.result;
+            reader.onload = async (evt) => {
+                let finalDataUrl = evt.target.result;
+                if (!isVideo && finalDataUrl.startsWith('data:image/')) {
+                    try {
+                        finalDataUrl = await compressImage(finalDataUrl);
+                    } catch (e) {}
+                }
+                itemObj.dataUrl = finalDataUrl;
                 itemObj.status = 'ready';
                 renderMediaPreviews();
             };
