@@ -33,7 +33,6 @@
             <div class="nav-links" id="navLinks">
                 <a href="#hero" class="nav-link active"><i class="fa-solid fa-heart"></i> Ana Sayfa</a>
                 <a href="#upload-section" class="nav-link"><i class="fa-solid fa-cloud-arrow-up"></i> Anı Paylaş</a>
-                <button class="nav-btn-gold" id="btnOpenQrModal"><i class="fa-solid fa-qrcode"></i> Masa QR Kodu</button>
                 <button class="theme-toggle" id="themeToggleBtn" title="Temayı Değiştir">
                     <i class="fa-solid fa-moon"></i>
                 </button>
@@ -241,50 +240,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- QR Code Generator & Table Badge Modal -->
-    <div class="modal-backdrop hidden" id="qrModal">
-        <div class="modal-card">
-            <button class="modal-close" id="btnCloseQrModal">&times;</button>
-            <div class="modal-header">
-                <span class="modal-tag"><i class="fa-solid fa-qrcode"></i> Masa QR Kartı</span>
-                <h3>Masa İçin QR Kod Oluşturucu</h3>
-                <p>Düğün masalarına koymak üzere özel QR kartı hazırlayın ve indirin.</p>
-            </div>
-            <div class="modal-body">
-                <div class="qr-controls">
-                    <label for="tableNumberInput"><i class="fa-solid fa-chair"></i> Masa Adı / Numarası:</label>
-                    <input type="text" id="tableNumberInput" value="Masa 1" placeholder="Örn: Masa 12">
-                </div>
-
-                <!-- Printable Card Preview -->
-                <div class="printable-card" id="printableCard">
-                    <div class="card-border-gold"></div>
-                    <div class="card-inner">
-                        <div class="card-header-names">Merve & Emrullah</div>
-                        <div class="card-table-badge" id="cardTableBadge">Masa 1</div>
-                        <div class="qr-code-box" id="qrCodeContainer"></div>
-                        <div class="card-instructions">
-                            <h4>📸 Anılarınızı Bizimle Paylaşın!</h4>
-                            <p>1. Telefonunuzun kamerasını açıp QR kodu okutun.<br>2. Düğünde çektiğiniz fotoğraf ve videoları anında yükleyin!</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="qr-modal-actions">
-                    <button class="btn-modal-gold" id="btnDownloadQr">
-                        <i class="fa-solid fa-download"></i> QR Kartını PNG İndir
-                    </button>
-                    <button class="btn-modal-outline" id="btnPrintQr">
-                        <i class="fa-solid fa-print"></i> Masa Kartını Yazdır
-                    </button>
-                    <button class="btn-modal-outline" id="btnCopyLink">
-                        <i class="fa-solid fa-link"></i> Bağlantıyı Kopyala
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Lightbox Modal for Photo/Video/Audio Detail -->
     <div class="modal-backdrop hidden" id="lightboxModal">

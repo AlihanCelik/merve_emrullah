@@ -651,23 +651,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let qrCodeInstance = null;
     let projQrCodeInstance = null;
 
-    btnOpenQrModal.addEventListener('click', () => {
-        qrModal.classList.remove('hidden');
-        generateQrCode();
-    });
+    if (btnOpenQrModal) {
+        btnOpenQrModal.addEventListener('click', () => {
+            if (qrModal) qrModal.classList.remove('hidden');
+            generateQrCode();
+        });
+    }
 
-    btnCloseQrModal.addEventListener('click', () => {
-        qrModal.classList.add('hidden');
-    });
+    if (btnCloseQrModal) {
+        btnCloseQrModal.addEventListener('click', () => {
+            if (qrModal) qrModal.classList.add('hidden');
+        });
+    }
 
-    qrModal.addEventListener('click', (e) => {
-        if (e.target === qrModal) qrModal.classList.add('hidden');
-    });
+    if (qrModal) {
+        qrModal.addEventListener('click', (e) => {
+            if (e.target === qrModal) qrModal.classList.add('hidden');
+        });
+    }
 
-    tableNumberInput.addEventListener('input', (e) => {
-        const val = e.target.value.trim() || 'Masa 1';
-        cardTableBadge.textContent = val;
-    });
+    if (tableNumberInput) {
+        tableNumberInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim() || 'Masa 1';
+            if (cardTableBadge) cardTableBadge.textContent = val;
+        });
+    }
 
     function generateQrCode() {
         const targetUrl = window.location.origin + window.location.pathname + '#upload-section';
