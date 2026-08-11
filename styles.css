@@ -1439,12 +1439,57 @@ button {
     border-radius: var(--radius-sm);
     overflow: hidden;
     border: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.4);
 }
 
 .preview-item img, .preview-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: var(--transition);
+}
+
+.preview-item.is-loading img,
+.preview-item.is-loading video {
+    filter: brightness(0.5) blur(2px);
+}
+
+.preview-placeholder-bg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.preview-badge {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+}
+
+.preview-badge.uploading {
+    background: rgba(234, 179, 8, 0.9);
+    color: #0F172A;
+}
+
+.preview-badge.ready {
+    background: rgba(34, 197, 94, 0.9);
+    color: #FFFFFF;
 }
 
 .btn-remove-preview {

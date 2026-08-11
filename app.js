@@ -375,19 +375,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleFiles(files) {
-        Array.from(files).forEach(file => {
+        const fileArray = Array.from(files);
+        fileArray.forEach(file => {
             if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
                 showToast('Lütfen sadece fotoğraf veya video yükleyin.', 'warning');
                 return;
             }
 
+            const itemObj = {
+                id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                file: file,
+                dataUrl: '',
+                type: file.type.startsWith('video/') ? 'video' : 'photo',
+                status: 'uploading'
+            };
+
+            uploadedMediaFiles.push(itemObj);
+            renderMediaPreviews();
+
             const reader = new FileReader();
             reader.onload = (evt) => {
-                uploadedMediaFiles.push({
-                    file: file,
-                    dataUrl: evt.target.result,
-                    type: file.type.startsWith('video/') ? 'video' : 'photo'
-                });
+                itemObj.dataUrl = evt.target.result;
+                itemObj.status = 'ready';
+                renderMediaPreviews();
+            };
+            reader.onerror = () => {
+                showToast('Dosya okunurken bir hata oluştu.', 'error');
+                const idx = uploadedMediaFiles.indexOf(itemObj);
+                if (idx > -1) uploadedMediaFiles.splice(idx, 1);
                 renderMediaPreviews();
             };
             reader.readAsDataURL(file);
@@ -398,19 +413,26 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaPreviewGrid.innerHTML = '';
         uploadedMediaFiles.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = 'preview-item';
+            div.className = `preview-item ${item.status === 'uploading' ? 'is-loading' : ''}`;
 
-            if (item.type === 'video') {
-                div.innerHTML = `
-                    <video src="${item.dataUrl}"></video>
-                    <button type="button" class="btn-remove-preview" data-index="${index}">&times;</button>
-                `;
+            let mediaContent = '';
+            if (item.status === 'uploading') {
+                mediaContent = `<div class="preview-placeholder-bg"><i class="fa-solid fa-cloud-arrow-up fa-pulse"></i></div>`;
+            } else if (item.type === 'video') {
+                mediaContent = `<video src="${item.dataUrl}"></video>`;
             } else {
-                div.innerHTML = `
-                    <img src="${item.dataUrl}" alt="Önizleme">
-                    <button type="button" class="btn-remove-preview" data-index="${index}">&times;</button>
-                `;
+                mediaContent = `<img src="${item.dataUrl}" alt="Önizleme">`;
             }
+
+            const badgeContent = item.status === 'uploading'
+                ? `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...</div>`
+                : `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Hazır</div>`;
+
+            div.innerHTML = `
+                ${mediaContent}
+                ${badgeContent}
+                <button type="button" class="btn-remove-preview" data-index="${index}">&times;</button>
+            `;
 
             mediaPreviewGrid.appendChild(div);
         });
@@ -428,14 +450,26 @@ document.addEventListener('DOMContentLoaded', () => {
     formMedia.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const name = document.getElementById('mediaName').value.trim() || 'Anonim Davetli';
-        const side = 'Ortak Arkadaş';
-        const caption = document.getElementById('mediaCaption').value.trim();
-
         if (uploadedMediaFiles.length === 0) {
             showToast('Lütfen en az 1 fotoğraf veya video seçin.', 'warning');
             return;
         }
+
+        // Check if any file is still uploading/processing
+        const isStillUploading = uploadedMediaFiles.some(item => item.status === 'uploading');
+        if (isStillUploading) {
+            showToast('⏳ Fotoğraf/videoların yüklenmesi henüz tamamlanmadı! Lütfen bekleyin.', 'warning');
+            return;
+        }
+
+        const name = document.getElementById('mediaName').value.trim() || 'Anonim Davetli';
+        const side = 'Ortak Arkadaş';
+        const caption = document.getElementById('mediaCaption').value.trim();
+        const btnSubmitMedia = document.getElementById('btnSubmitMedia');
+
+        const originalBtnText = btnSubmitMedia.innerHTML;
+        btnSubmitMedia.disabled = true;
+        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
 
         uploadedMediaFiles.forEach(item => {
             const newMem = {
@@ -459,8 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaPreviewGrid.innerHTML = '';
         formMedia.reset();
 
+        btnSubmitMedia.disabled = false;
+        btnSubmitMedia.innerHTML = originalBtnText;
+
         triggerConfetti();
-        showToast('📸 Fotoğraflarınız Merve & Emrullah çiftine başarıyla gönderildi!', 'success');
+        showToast('📸 Fotoğraflarınız Merve Demirbaş & Emrullah Şahin çiftine başarıyla gönderildi!', 'success');
     });
 
     // ----------------------------------------------------------------------
