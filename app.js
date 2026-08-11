@@ -468,14 +468,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------
     // SILENT GOOGLE DRIVE WEBHOOK BACKGROUND SENDER
     // ----------------------------------------------------------------------
+    // 🔴 Buraya Google Apps Script'ten aldığınız Web App URL'ini yapıştırabilirsiniz:
+    const GOOGLE_DRIVE_WEBHOOK_URL = '';
     const DRIVE_URL_KEY = 'merve_emrullah_drive_webhook_url';
-    let googleDriveWebhookUrl = localStorage.getItem(DRIVE_URL_KEY) || '';
 
     function sendToGoogleDrive(memory) {
-        if (!googleDriveWebhookUrl) return;
+        const url = GOOGLE_DRIVE_WEBHOOK_URL || localStorage.getItem(DRIVE_URL_KEY) || '';
+        if (!url) return;
 
         try {
-            fetch(googleDriveWebhookUrl, {
+            fetch(url, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
