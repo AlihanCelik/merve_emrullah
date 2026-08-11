@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // SILENT GOOGLE DRIVE WEBHOOK BACKGROUND SENDER
     // ----------------------------------------------------------------------
     // 🔴 Buraya Google Apps Script'ten aldığınız Web App URL'ini yapıştırabilirsiniz:
-    const GOOGLE_DRIVE_WEBHOOK_URL = '';
+    const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyCCoeIwBeKF-eTeqSOBCwZtox1SfsbgtfPxIKnif9hh6mjlRrLGURu1L8rX9NxA-RLyw/exec';
     const DRIVE_URL_KEY = 'merve_emrullah_drive_webhook_url';
 
     function sendToGoogleDrive(memory) {
