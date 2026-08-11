@@ -325,8 +325,9 @@ button {
 .hero-section {
     position: relative;
     padding: 9rem 1.5rem 5rem 1.5rem;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.7) 100%),
-                url('assets/hero.png') center/cover no-repeat;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.25) 45%, rgba(15, 23, 42, 0.75) 100%),
+                url('assets/hero.jpg') center 30% / cover no-repeat;
+    image-rendering: -webkit-optimize-contrast;
     color: #FFFFFF;
     text-align: center;
     min-height: 85vh;
@@ -339,7 +340,7 @@ button {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%);
 }
 
 .hero-container {
@@ -347,6 +348,7 @@ button {
     z-index: 2;
     max-width: 850px;
     margin: 0 auto;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
 }
 
 .hero-badge {
@@ -2496,6 +2498,7 @@ button {
 
     .hero-section {
         padding: 6.5rem 1rem 2.5rem 1rem;
+        background-position: center 30% !important;
     }
 
     .hero-badge {
