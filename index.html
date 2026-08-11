@@ -114,46 +114,16 @@
             <div class="upload-card-wrapper">
                 <!-- Upload Tabs Header -->
                 <div class="upload-tabs">
-                    <button class="upload-tab-btn active" data-tab="tab-wish">
-                        <i class="fa-solid fa-pen-nib"></i> <span>Yazılı Anı Defteri</span>
-                    </button>
-                    <button class="upload-tab-btn" data-tab="tab-media">
+                    <button class="upload-tab-btn active" data-tab="tab-media">
                         <i class="fa-solid fa-photo-film"></i> <span>Fotoğraf & Video</span>
                     </button>
+                    <button class="upload-tab-btn" data-tab="tab-wish">
+                        <i class="fa-solid fa-pen-nib"></i> <span>Yazılı Anı Defteri</span>
+                    </button>
                 </div>
 
-                <!-- Tab 1: Written Guestbook Wish -->
-                <div class="upload-tab-content active" id="tab-wish">
-                    <form id="formWish" class="upload-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="wishName"><i class="fa-solid fa-user"></i> Adınız Soyadınız *</label>
-                                <input type="text" id="wishName" placeholder="Örn: Ahmet & Selin Yılmaz" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="wishSide"><i class="fa-solid fa-users"></i> Yakınlık Dereceniz</label>
-                                <select id="wishSide">
-                                    <option value="Gelin Tarafı">👰 Gelin Tarafı</option>
-                                    <option value="Damat Tarafı">🤵 Damat Tarafı</option>
-                                    <option value="Ortak Arkadaş" selected>💖 Ortak Arkadaş</option>
-                                    <option value="Aile">👨‍👩‍👧‍👦 Aile & Akraba</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="wishMessage"><i class="fa-solid fa-heart-pulse"></i> Anı Notunuz & İyi Dilekleriniz *</label>
-                            <textarea id="wishMessage" rows="4" placeholder="Merve & Emrullah çiftine duygu ve dileklerinizi yazın..." required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-submit-gold">
-                            <i class="fa-solid fa-paper-plane"></i> Anı Notunu Gönder
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Tab 2: Photo & Video Upload -->
-                <div class="upload-tab-content" id="tab-media">
+                <!-- Tab 1: Photo & Video Upload -->
+                <div class="upload-tab-content active" id="tab-media">
                     <form id="formMedia" class="upload-form">
                         <div class="form-group">
                             <label for="mediaName"><i class="fa-solid fa-user"></i> Adınız Soyadınız (İsteğe Bağlı)</label>
@@ -183,6 +153,36 @@
 
                         <button type="submit" class="btn-submit-gold" id="btnSubmitMedia">
                             <i class="fa-solid fa-paper-plane"></i> Medyayı Gönder
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Written Guestbook Wish -->
+                <div class="upload-tab-content" id="tab-wish">
+                    <form id="formWish" class="upload-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="wishName"><i class="fa-solid fa-user"></i> Adınız Soyadınız *</label>
+                                <input type="text" id="wishName" placeholder="Örn: Ahmet & Selin Yılmaz" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="wishSide"><i class="fa-solid fa-users"></i> Yakınlık Dereceniz</label>
+                                <select id="wishSide">
+                                    <option value="Gelin Tarafı">👰 Gelin Tarafı</option>
+                                    <option value="Damat Tarafı">🤵 Damat Tarafı</option>
+                                    <option value="Ortak Arkadaş" selected>💖 Ortak Arkadaş</option>
+                                    <option value="Aile">👨‍👩‍👧‍👦 Aile & Akraba</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="wishMessage"><i class="fa-solid fa-heart-pulse"></i> Anı Notunuz & İyi Dilekleriniz *</label>
+                            <textarea id="wishMessage" rows="4" placeholder="Merve & Emrullah çiftine duygu ve dileklerinizi yazın..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit-gold">
+                            <i class="fa-solid fa-paper-plane"></i> Anı Notunu Gönder
                         </button>
                     </form>
                 </div>
