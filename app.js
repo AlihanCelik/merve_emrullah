@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formMedia.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const name = document.getElementById('mediaName').value.trim();
+        const name = document.getElementById('mediaName').value.trim() || 'Anonim Davetli';
         const side = document.getElementById('mediaSide').value;
         const caption = document.getElementById('mediaCaption').value.trim();
 
