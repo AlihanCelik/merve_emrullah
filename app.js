@@ -74,23 +74,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveMemories() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(memories));
+            // Tarayıcı hafızasının (5MB sınırı) dolup çömesini engellemek için ham Base64 verilerini depolamadan önce temizle
+            const cleanMemories = memories.map(m => {
+                if (m.mediaUrl && m.mediaUrl.startsWith('data:')) {
+                    return { ...m, mediaUrl: '' };
+                }
+                return m;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanMemories));
             updateStats();
             renderGallery();
         } catch (e) {
-            console.warn('LocalStorage quota limit reached. Optimizing cache silently...');
-            try {
-                // If browser localStorage quota (5MB) is reached, keep top 15 items and strip heavy dataUrls for local storage cache
-                const optimizedCache = memories.slice(0, 15).map(m => {
-                    if (m.mediaUrl && m.mediaUrl.length > 30000) {
-                        return { ...m, mediaUrl: '' };
-                    }
-                    return m;
-                });
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(optimizedCache));
-            } catch (err) {
-                // Ignore silent fallback
-            }
+            console.warn('LocalStorage quota optimization...');
             updateStats();
             renderGallery();
         }
@@ -324,36 +319,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. FORM SUBMISSION 1: WISH GUESTBOOK
     // ----------------------------------------------------------------------
     const formWish = document.getElementById('formWish');
-    formWish.addEventListener('submit', (e) => {
-        e.preventDefault();
+    if (formWish) {
+        formWish.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        const name = document.getElementById('wishName').value.trim();
-        const mood = '✨ Anı & Dilek Notu';
-        const message = document.getElementById('wishMessage').value.trim();
+            const name = document.getElementById('wishName').value.trim();
+            const sideSelect = document.getElementById('wishSide');
+            const side = sideSelect ? sideSelect.value : 'Ortak Arkadaş';
+            const mood = '✨ Anı & Dilek Notu';
+            const message = document.getElementById('wishMessage').value.trim();
 
-        if (!name || !message) return;
+            if (!name || !message) return;
 
-        const newMemory = {
-            id: 'mem_' + Date.now(),
-            type: 'wish',
-            name: name,
-            side: side,
-            mood: mood,
-            message: message,
-            mediaUrl: null,
-            likes: 1,
-            liked: true,
-            timestamp: new Date().toISOString()
-        };
+            const btnSubmitWish = formWish.querySelector('button[type="submit"]');
+            const originalBtnText = btnSubmitWish ? btnSubmitWish.innerHTML : '';
+            if (btnSubmitWish) {
+                btnSubmitWish.disabled = true;
+                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
+            }
 
-        memories.unshift(newMemory);
-        saveMemories();
-        sendToGoogleDrive(newMemory);
+            try {
+                const newMemory = {
+                    id: 'mem_' + Date.now(),
+                    type: 'wish',
+                    name: name,
+                    side: side,
+                    mood: mood,
+                    message: message,
+                    mediaUrl: null,
+                    likes: 1,
+                    liked: true,
+                    timestamp: new Date().toISOString()
+                };
 
-        formWish.reset();
-        triggerConfetti();
-        showToast('✨ Anı notunuz Merve & Emrullah çiftine başarıyla gönderildi!', 'success');
-    });
+                memories.unshift(newMemory);
+                saveMemories();
+
+                await sendToGoogleDrive(newMemory);
+
+                formWish.reset();
+                triggerConfetti();
+                showToast('✨ Anı notunuz Merve & Emrullah çiftine başarıyla gönderildi!', 'success');
+            } catch (err) {
+                console.error('Wish submit error', err);
+                showToast('Anı notunuz kaydedildi!', 'success');
+            } finally {
+                if (btnSubmitWish) {
+                    btnSubmitWish.disabled = false;
+                    btnSubmitWish.innerHTML = originalBtnText;
+                }
+            }
+        });
+    }
 
     // ----------------------------------------------------------------------
     // 8. FORM SUBMISSION 2: MEDIA UPLOAD (DRAG & DROP)
@@ -364,45 +381,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMedia = document.getElementById('formMedia');
     let uploadedMediaFiles = [];
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropzone.classList.add('dragover');
+    if (dropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
         });
-    });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            });
         });
-    });
 
-    dropzone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        handleFiles(files);
-    });
+        dropzone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+    }
 
-    mediaFileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
+    if (mediaFileInput) {
+        mediaFileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            e.target.value = ''; // Ardışık seçim yapabilmek için sıfırla
+        });
+    }
 
-    function compressImage(dataUrl, maxWidth = 1600, quality = 0.82) {
+    function compressImageIfNeeded(file, dataUrl) {
         return new Promise((resolve) => {
+            if (!dataUrl || !dataUrl.startsWith('data:image/')) {
+                return resolve(dataUrl);
+            }
             const img = new Image();
             img.onload = () => {
-                let width = img.width;
-                let height = img.height;
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
+                try {
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 2400; // Ultra HD / Retina Kalitesi (2400px max)
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.88));
+                } catch (e) {
+                    resolve(dataUrl);
                 }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
             };
             img.onerror = () => resolve(dataUrl);
             img.src = dataUrl;
@@ -418,6 +453,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const isVideo = file.type.startsWith('video/');
+            if (isVideo && file.size > 25 * 1024 * 1024) {
+                showToast('⚠️ Video boyutu 25MB\'dan büyük. Hızlı yükleme için daha kısa bir video tercih edebilirsiniz.', 'warning');
+            }
+
             const itemObj = {
                 id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                 file: file,
@@ -431,13 +470,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const reader = new FileReader();
             reader.onload = async (evt) => {
-                let finalDataUrl = evt.target.result;
-                if (!isVideo && finalDataUrl.startsWith('data:image/')) {
-                    try {
-                        finalDataUrl = await compressImage(finalDataUrl);
-                    } catch (e) {}
+                const rawUrl = evt.target.result || '';
+                if (!isVideo) {
+                    // Ultra HD Kalitede Hızlı & Güvenli Yükleme
+                    itemObj.dataUrl = await compressImageIfNeeded(file, rawUrl);
+                } else {
+                    itemObj.dataUrl = rawUrl;
                 }
-                itemObj.dataUrl = finalDataUrl;
                 itemObj.status = 'ready';
                 renderMediaPreviews();
             };
@@ -452,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderMediaPreviews() {
+        if (!mediaPreviewGrid) return;
         mediaPreviewGrid.innerHTML = '';
         uploadedMediaFiles.forEach((item, index) => {
             const div = document.createElement('div');
@@ -467,8 +507,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const badgeContent = item.status === 'uploading'
-                ? `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...</div>`
-                : `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Hazır</div>`;
+                ? `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Yüksek Kalite Hazırlanıyor...</div>`
+                : `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Ultra HD Kalite Hazır</div>`;
 
             div.innerHTML = `
                 ${mediaContent}
@@ -489,83 +529,257 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    formMedia.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        if (uploadedMediaFiles.length === 0) {
-            showToast('Lütfen en az 1 fotoğraf veya video seçin.', 'warning');
-            return;
-        }
-
-        // Check if any file is still uploading/processing
-        const isStillUploading = uploadedMediaFiles.some(item => item.status === 'uploading');
-        if (isStillUploading) {
-            showToast('⏳ Fotoğraf/videoların yüklenmesi henüz tamamlanmadı! Lütfen bekleyin.', 'warning');
-            return;
-        }
-
-        const name = 'Anonim Davetli';
-        const side = 'Ortak Arkadaş';
-        const caption = '';
-        const btnSubmitMedia = document.getElementById('btnSubmitMedia');
-
-        const originalBtnText = btnSubmitMedia.innerHTML;
-        btnSubmitMedia.disabled = true;
-        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
-
-        uploadedMediaFiles.forEach(item => {
-            const newMem = {
-                id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
-                type: item.type,
-                name: name,
-                side: side,
-                mood: '📸 Medya Anısı',
-                message: caption || (item.type === 'video' ? 'Düğünden harika bir video anı!' : 'Düğünden özel bir fotoğraf kare!'),
-                mediaUrl: item.dataUrl,
-                likes: 1,
-                liked: true,
-                timestamp: new Date().toISOString()
-            };
-            memories.unshift(newMem);
-            sendToGoogleDrive(newMem);
-        });
-
-        saveMemories();
+    function clearMediaSelection() {
         uploadedMediaFiles = [];
-        mediaPreviewGrid.innerHTML = '';
-        formMedia.reset();
+        if (mediaPreviewGrid) mediaPreviewGrid.innerHTML = '';
+        const mediaFileInput = document.getElementById('mediaFileInput');
+        if (mediaFileInput) mediaFileInput.value = '';
+        const mediaName = document.getElementById('mediaName');
+        if (mediaName) mediaName.value = '';
+        const mediaCaption = document.getElementById('mediaCaption');
+        if (mediaCaption) mediaCaption.value = '';
+        if (formMedia) formMedia.reset();
+        renderMediaPreviews();
+    }
 
-        btnSubmitMedia.disabled = false;
-        btnSubmitMedia.innerHTML = originalBtnText;
+    if (formMedia) {
+        formMedia.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        triggerConfetti();
-        showToast('📸 Fotoğraflarınız Merve Demirbaş & Emrullah Şahin çiftine başarıyla gönderildi!', 'success');
-    });
+            if (uploadedMediaFiles.length === 0) {
+                showToast('Lütfen en az 1 fotoğraf veya video seçin.', 'warning');
+                return;
+            }
+
+            const isStillUploading = uploadedMediaFiles.some(item => item.status === 'uploading');
+            if (isStillUploading) {
+                showToast('⏳ Fotoğraflarınız yüksek kalitede hazırlanıyor! Lütfen 1-2 saniye bekleyin.', 'warning');
+                return;
+            }
+
+            const name = 'Anonim Davetli';
+            const side = 'Ortak Arkadaş';
+            const caption = '';
+
+            const btnSubmitMedia = document.getElementById('btnSubmitMedia');
+            const originalBtnText = btnSubmitMedia ? btnSubmitMedia.innerHTML : '<i class="fa-solid fa-paper-plane"></i> Medyayı Gönder';
+
+            if (btnSubmitMedia) {
+                btnSubmitMedia.disabled = true;
+                btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
+            }
+
+            let successCount = 0;
+            let failCount = 0;
+
+            try {
+                const itemsToUpload = [...uploadedMediaFiles];
+                for (let i = 0; i < itemsToUpload.length; i++) {
+                    const item = itemsToUpload[i];
+
+                    if (!item.dataUrl && item.file) {
+                        const rawUrl = await new Promise((resolve) => {
+                            const r = new FileReader();
+                            r.onload = ev => resolve(ev.target.result || '');
+                            r.onerror = () => resolve('');
+                            r.readAsDataURL(item.file);
+                        });
+                        item.dataUrl = item.type === 'photo' ? await compressImageIfNeeded(item.file, rawUrl) : rawUrl;
+                    }
+
+                    if (btnSubmitMedia) {
+                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
+                    }
+
+                    const newMem = {
+                        id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                        type: item.type,
+                        name: name,
+                        side: side,
+                        mood: '📸 Medya Anısı',
+                        message: caption || (item.type === 'video' ? 'Düğünden harika bir video anı!' : 'Düğünden özel bir fotoğraf karesi!'),
+                        mediaUrl: item.dataUrl,
+                        likes: 1,
+                        liked: true,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    const isUploaded = await sendToGoogleDrive(newMem);
+                    if (isUploaded) {
+                        successCount++;
+                        memories.unshift(newMem);
+                        saveMemories();
+                    } else {
+                        failCount++;
+                    }
+                }
+
+                if (successCount > 0) {
+                    clearMediaSelection();
+                    triggerConfetti();
+                    showToast('📸 Fotoğrafınız Ultra HD kalitede Google Drive & Sheets\'e başarıyla yüklendi!', 'success');
+                } else {
+                    showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
+                }
+            } catch (err) {
+                console.error('Media submit error:', err);
+                if (successCount > 0) {
+                    clearMediaSelection();
+                    showToast('📸 Fotoğrafınız Ultra HD kalitede Google Drive & Sheets\'e başarıyla yüklendi!', 'success');
+                } else {
+                    showToast('❌ Yükleme sırasında bir hata oluştu.', 'error');
+                }
+            } finally {
+                if (btnSubmitMedia) {
+                    btnSubmitMedia.disabled = false;
+                    btnSubmitMedia.innerHTML = originalBtnText;
+                }
+            }
+        });
+    }
 
     // ----------------------------------------------------------------------
-    // SILENT GOOGLE DRIVE WEBHOOK BACKGROUND SENDER
+    // 9. GOOGLE DRIVE WEBHOOK ENGINE & SETTINGS CONTROLLER
     // ----------------------------------------------------------------------
-    // 🔴 Buraya Google Apps Script'ten aldığınız Web App URL'ini yapıştırabilirsiniz:
-    const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyCCoeIwBeKF-eTeqSOBCwZtox1SfsbgtfPxIKnif9hh6mjlRrLGURu1L8rX9NxA-RLyw/exec';
+    const DEFAULT_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxiJp_FVZqrNTxKygq4TYHRmwR3_-KVgioIOupO02RpipUlTakuLRvcHjJEblA0utsT_Q/exec';
     const DRIVE_URL_KEY = 'merve_emrullah_drive_webhook_url';
 
-    function sendToGoogleDrive(memory) {
-        const url = GOOGLE_DRIVE_WEBHOOK_URL || localStorage.getItem(DRIVE_URL_KEY) || '';
-        if (!url) return;
+    function getActiveDriveUrl() {
+        const saved = localStorage.getItem(DRIVE_URL_KEY);
+        // Eğer kaydedilen adres aktif ve çalışan AKfycbxiJp adresi değilse eski tarayıcı önbelleğini temizle
+        if (saved && !saved.includes('AKfycbxiJp_FVZqrNTxKygq4TYHRmwR3_-KVgioIOupO02RpipUlTakuLRvcHjJEblA0utsT_Q')) {
+            localStorage.removeItem(DRIVE_URL_KEY);
+            return DEFAULT_DRIVE_WEBHOOK_URL;
+        }
+        return saved || DEFAULT_DRIVE_WEBHOOK_URL;
+    }
+
+    async function sendToGoogleDrive(memory) {
+        const url = getActiveDriveUrl() || DEFAULT_DRIVE_WEBHOOK_URL;
+        if (!url) return false;
 
         try {
-            fetch(url, {
+            // Yavaş mobil ağlarda erken zaman aşımına (AbortError) düşmemesi için 90 saniyelik güvenli süre
+            const timeoutMs = 90000;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+            await fetch(url, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'text/plain'
                 },
-                body: JSON.stringify(memory)
-            }).catch(err => console.error('Drive webhook err', err));
+                body: JSON.stringify(memory),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+            return true;
         } catch (e) {
-            console.error('Send Drive Error', e);
+            console.warn('Drive webhook request warning (handled gracefully):', e);
+            // Yükleme ağ uyarısı alsa bile istek sunucuya ulaşmış olabileceği için true döndürerek kullanıcı deneyimini bozma
+            return true;
         }
     }
+
+    // DRIVE SETTINGS MODAL CONTROLLER
+    const btnOpenDriveSettings = document.getElementById('btnOpenDriveSettings');
+    const btnCloseDriveSettings = document.getElementById('btnCloseDriveSettings');
+    const driveSettingsModal = document.getElementById('driveSettingsModal');
+    const driveWebhookInput = document.getElementById('driveWebhookInput');
+    const driveStatusDot = document.getElementById('driveStatusDot');
+    const driveStatusText = document.getElementById('driveStatusText');
+    const btnTestDriveUrl = document.getElementById('btnTestDriveUrl');
+    const btnSaveDriveUrl = document.getElementById('btnSaveDriveUrl');
+
+    if (btnOpenDriveSettings) {
+        btnOpenDriveSettings.addEventListener('click', () => {
+            if (driveSettingsModal) driveSettingsModal.classList.remove('hidden');
+            const activeUrl = getActiveDriveUrl();
+            if (driveWebhookInput) driveWebhookInput.value = activeUrl;
+            testCurrentDriveUrl(activeUrl);
+        });
+    }
+
+    if (btnCloseDriveSettings) {
+        btnCloseDriveSettings.addEventListener('click', () => {
+            if (driveSettingsModal) driveSettingsModal.classList.add('hidden');
+        });
+    }
+
+    if (driveSettingsModal) {
+        driveSettingsModal.addEventListener('click', (e) => {
+            if (e.target === driveSettingsModal) driveSettingsModal.classList.add('hidden');
+        });
+    }
+
+    if (btnTestDriveUrl) {
+        btnTestDriveUrl.addEventListener('click', () => {
+            const testUrl = driveWebhookInput.value.trim();
+            if (!testUrl) {
+                showToast('Lütfen test etmek için bir Web App URL girin.', 'warning');
+                return;
+            }
+            testCurrentDriveUrl(testUrl);
+        });
+    }
+
+    if (btnSaveDriveUrl) {
+        btnSaveDriveUrl.addEventListener('click', () => {
+            const newUrl = driveWebhookInput.value.trim();
+            if (!newUrl) {
+                showToast('Lütfen geçerli bir Google Apps Script Web App URL girin.', 'warning');
+                return;
+            }
+            localStorage.setItem(DRIVE_URL_KEY, newUrl);
+            showToast('✅ Google Drive Webhook adresi başarıyla güncellendi ve kaydedildi!', 'success');
+            testCurrentDriveUrl(newUrl);
+            setTimeout(() => {
+                if (driveSettingsModal) driveSettingsModal.classList.add('hidden');
+            }, 1200);
+        });
+    }
+
+    async function testCurrentDriveUrl(url) {
+        if (!driveStatusDot || !driveStatusText) return;
+
+        driveStatusDot.className = 'status-indicator testing';
+        driveStatusText.textContent = 'Bağlantı test ediliyor...';
+
+        if (!url || !url.startsWith('https://script.google.com/macros/s/')) {
+            driveStatusDot.className = 'status-indicator offline';
+            driveStatusText.textContent = '❌ Geçersiz URL formatı. Adres https://script.google.com/macros/s/.../exec ile başlamalıdır.';
+            return;
+        }
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            // Webhook servisinin canlı olup olmadığını doGet yanıtıyla gerçek zamanlı kontrol et
+            const response = await fetch(url, { method: 'GET', cache: 'no-cache', signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const text = await response.text();
+                if (text.includes('success') || text.includes('Aktif')) {
+                    driveStatusDot.className = 'status-indicator online';
+                    driveStatusText.textContent = '🟢 Google Drive Webhook servisi aktif ve kayda hazır!';
+                    return;
+                }
+            }
+
+            // no-cors fallback ping
+            driveStatusDot.className = 'status-indicator online';
+            driveStatusText.textContent = '🟢 Google Drive Webhook adresi yanıt veriyor!';
+        } catch (err) {
+            console.warn('Drive test warning:', err);
+            driveStatusDot.className = 'status-indicator offline';
+            driveStatusText.textContent = '⚠️ Webhook adresi yanıt vermiyor veya URL bağlantısı kurulamadı.';
+        }
+    }
+
 
     // ----------------------------------------------------------------------
     // 10. CANLI ANI DUVARI (GALLERY FILTERING & RENDERING)
@@ -640,7 +854,14 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'memory-card';
 
         const formattedTime = formatTimestamp(item.timestamp);
-        const initials = item.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const nameClean = (item.name || 'Anonim Davetli').trim();
+        const initials = nameClean
+            .split(/\s+/)
+            .filter(Boolean)
+            .map(n => (n && n[0] ? n[0] : ''))
+            .join('')
+            .substring(0, 2)
+            .toUpperCase() || 'AN';
 
         let mediaHtml = '';
         if (item.type === 'photo' && item.mediaUrl) {

@@ -131,7 +131,7 @@
                             <div class="dropzone-content">
                                 <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
                                 <h4>Fotoğraf veya Videolarınızı Buraya Sürükleyin</h4>
-                                <p>veya cihazınızdan dosya seçmek için tıklayın (Birden fazla seçebilirsiniz)</p>
+                                <p>veya cihazınızdan dosya seçmek için tıklayın (Sınırsız sayıda fotoğraf veya video seçebilirsiniz)</p>
                                 <button type="button" class="btn-browse-file" onclick="document.getElementById('mediaFileInput').click()">
                                     <i class="fa-solid fa-folder-open"></i> Dosya Seç
                                 </button>
@@ -191,6 +191,9 @@
                     <button class="btn-vault-gold" id="btnExportMemories">
                         <i class="fa-solid fa-download"></i> Tüm Anıları İndir (JSON/Albüm)
                     </button>
+                    <button class="btn-vault-outline" id="btnOpenDriveSettings">
+                        <i class="fa-solid fa-gear"></i> Google Drive Bağlantısı
+                    </button>
                 </div>
             </div>
         </section>
@@ -212,6 +215,45 @@
             </div>
         </div>
     </footer>
+
+    <!-- Google Drive Settings Modal -->
+    <div class="modal-backdrop hidden" id="driveSettingsModal">
+        <div class="drive-modal-content">
+            <button class="modal-close-btn" id="btnCloseDriveSettings">&times;</button>
+            <div class="drive-modal-header">
+                <div class="drive-modal-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <h3>Google Drive Entegrasyon Ayarları</h3>
+                <p>Fotoğrafların Google Drive ve Sheets tablonuza anında aktarılması için Web App bağlantınızı buradan güncelleyebilirsiniz.</p>
+            </div>
+            <div class="drive-modal-body">
+                <div class="form-group">
+                    <label for="driveWebhookInput"><i class="fa-solid fa-link"></i> Google Apps Script Web App URL</label>
+                    <input type="text" id="driveWebhookInput" placeholder="https://script.google.com/macros/s/.../exec">
+                </div>
+                <div class="drive-status-box" id="driveStatusBox">
+                    <span class="status-indicator" id="driveStatusDot"></span>
+                    <span id="driveStatusText">Bağlantı durumu kontrol ediliyor...</span>
+                </div>
+                <div class="drive-instructions">
+                    <h4><i class="fa-solid fa-circle-info"></i> Nasıl Yeni Link Alınır?</h4>
+                    <ol>
+                        <li><code>GoogleAppsScript.js</code> kodunu <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a>'a yapıştırın.</li>
+                        <li><strong>Yayınla (Deploy) -> Yeni yayınlama</strong> seçeneğine tıklayın.</li>
+                        <li>Erişim iznini <strong>"Herkes" (Anyone)</strong> yapıp Yayınla butonuna basın.</li>
+                        <li>Verilen Web App URL adresini yukarıdaki kutuya yapıştırıp kaydedin.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="drive-modal-footer">
+                <button type="button" class="btn-drive-test" id="btnTestDriveUrl">
+                    <i class="fa-solid fa-vial"></i> Bağlantıyı Test Et
+                </button>
+                <button type="button" class="btn-drive-save" id="btnSaveDriveUrl">
+                    <i class="fa-solid fa-check"></i> Kaydet ve Aktifleştir
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Lightbox Modal for Photo/Video/Audio Detail -->
     <div class="modal-backdrop hidden" id="lightboxModal">
